@@ -5,8 +5,8 @@ const { registerUser, loginUser, createBlog, updateBlog, getAllBlogs, deleteBlog
 const router = express.Router();
 router.post("/register", registerUser)
 router.post("/Login", loginUser)
-router.post("/createBlog", createBlog)
-router.put("/updateBlog/:id", updateBlog)
+router.post("/createBlog/:id", createBlog)
+router.patch("/:userId/updateBlogs/:blogId", updateBlog)
 router.get("/users/:id", getAllBlogs)
 router.patch("/users/:id/userBlog/:id", updateBlog)
 router.delete("/users/:id/blogs", deleteBlog)

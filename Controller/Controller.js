@@ -1,5 +1,5 @@
 const userModel = require("../Model/schemaFile");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 
 const handleError = (res, error) => {
   return res
@@ -9,22 +9,23 @@ const handleError = (res, error) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const hashPassword = await bcrypt.hash(password, 10);
+    const { userName, email, password } = req.body;
+    // const hashPassword = await bcrypt.hash(password, 10);
 
     const createUser = await userModel.create({
-      username,
+      userName,
       email,
       password: hashPassword,
-      blog: [],
+      blogs: [],
     });
 
     if (!email || !password) {
-      res.status(400).json({ message: "All fields required" });
+      res.status(400).json({ message: "All fields required" }); 
     } else {
       res.status(201).json({ message: "Created", data: createUser });
     }
   } catch (error) {
+    console.log(error);
     handleError(res, error);
   }
 };
@@ -57,8 +58,8 @@ const createBlog = async (req, res) => {
       content,
       createdAt,
     });
-    await createBlog.save();
-    res.status(200).json({ alert: "Blog Created", data: createBlog });
+    await findUser.save();
+    res.status(200).json({ Message: "Blog Created", data: createBlog });
   } catch (error) {
     handleError(res, error);
   }
@@ -67,7 +68,7 @@ const createBlog = async (req, res) => {
 const getAllBlogs = async (req, res) => {
   try {
     const findUser = await userModel.findById(req.params.id);
-    res.status(200).json({ alert: "Blogs Retrieved", data: findUser.blogs });
+    res.status(200).json({ Message: "Blogs Retrieved", data: findUser.blog });
   } catch (error) {
     handleError(res, error);
   }
@@ -75,10 +76,22 @@ const getAllBlogs = async (req, res) => {
 
 const updateBlog = async (req, res) => {
   try {
+    const {userId, blogId} = req.params;
     const { title, content } = req.body;
-    const findUser = await userModel.findById(req.params.id);
-    const update = await findUser.blogs.id(title, content);
+    const findUser = await userModel.findById(userId);
+    if (!findUser) {
+        res.status(404).json({Message: "User Not Found"})
+    }
+    const updateBlog = await findUser.blogs.id(blogId);
+    if (!updateBlog) {
+        res.status(404).json({Message: "Blog Not Found"})
+    }
+    if(title) updateBlog.title = title;
+    if(content) updateBlog.content = content;
+    await findUser.save();
+    return res.status(200).json({Message: "Blogs Updated Successfully", data: updateBlog})
   } catch (error) {
+    console.log(error);
     handleError(res, error);
   }
 };
