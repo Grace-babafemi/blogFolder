@@ -1,5 +1,5 @@
 const userModel = require("../Model/schemaFile");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 
 const handleError = (res, error) => {
   return res
@@ -10,7 +10,7 @@ const handleError = (res, error) => {
 const registerUser = async (req, res) => {
   try {
     const { userName, email, password } = req.body;
-    // const hashPassword = await bcrypt.hash(password, 10);
+    const hashPassword = await bcrypt.hash(password, 10);
 
     const createUser = await userModel.create({
       userName,
